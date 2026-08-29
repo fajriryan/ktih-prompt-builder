@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KTIH Prompt Builder - MURAF Indonesia</title>
+<style>
+  :root{
+    --bg:#f6f2ea;
+    --card:#fffdf9;
+    --ink:#1c1f1d;
+    --muted:#6f736f;
+    --green:#2f6f63;
+    --green2:#d9ebe6;
+    --orange:#d97a54;
+    --orange2:#f6dfd4;
+    --line:#ddd7cd;
+    --danger:#a94442;
+    --shadow:0 8px 30px rgba(28,31,29,.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height:1.45;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:20px}
+  .brandbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:10px 2px 2px;
+  }
+  .brandlogo{
+    display:flex;align-items:center;gap:12px;min-height:48px
+  }
+  .brandlogo img{
+    display:block;max-height:54px;max-width:180px;object-fit:contain;
+    border-radius:6px
+  }
+  .brandtext{
+    font-weight:900;letter-spacing:.04em;font-size:18px;line-height:1
+  }
+  .brandtext small{
+    display:block;font-size:9px;letter-spacing:.14em;color:var(--orange);margin-top:4px
+  }
+  .clienttag{
+    font-size:12px;color:var(--muted);font-weight:700;text-align:right
+  }
+
+  .hero{
+    background:#121615;
+    color:white;
+    border-radius:24px;
+    padding:28px;
+    margin:10px 0 20px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero:after{
+    content:"";
+    position:absolute;
+    width:220px;height:220px;border-radius:50%;
+    background:var(--green);opacity:.45;
+    right:-80px;top:-70px;
+  }
+  .hero h1{margin:0 0 8px;font-size:clamp(26px,4vw,44px);letter-spacing:-.03em}
+  .hero p{margin:0;max-width:820px;color:#d8dedb}
+  .badge{
+    display:inline-block;background:var(--orange);color:white;
+    padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:12px
+  }
+
+  .grid{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;
+    box-shadow:var(--shadow)
+  }
+  .card h2{margin:0 0 12px;font-size:20px}
+  .card h3{margin:18px 0 8px;font-size:15px}
+  .help{font-size:12px;color:var(--muted);margin-top:4px}
+  label{font-weight:700;font-size:13px;display:block;margin-bottom:6px}
+  select,input,textarea{
+    width:100%;border:1px solid var(--line);border-radius:12px;background:white;
+    padding:11px 12px;font:inherit;color:var(--ink);outline:none;
+  }
+  textarea{min-height:84px;resize:vertical}
+  select:focus,input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(47,111,99,.12)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .checkgrid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px
+  }
+  .chip{
+    display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);
+    background:#fff;border-radius:12px;padding:9px 10px;font-size:13px;cursor:pointer
+  }
+  .chip input{width:auto;margin-top:3px}
+  .section{
+    border-top:1px dashed var(--line);padding-top:14px;margin-top:14px
+  }
+  .step{
+    display:inline-flex;align-items:center;gap:8px;margin-bottom:8px;
+    font-size:12px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.04em
+  }
+  .step b{
+    width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+    background:var(--green);color:#fff;font-size:12px
+  }
+  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  button{
+    border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer;font:inherit
+  }
+  .primary{background:var(--green);color:white}
+  .secondary{background:var(--green2);color:var(--green)}
+  .ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  button:hover{filter:brightness(.98);transform:translateY(-1px)}
+  .output{
+    white-space:pre-wrap;background:#101413;color:#e9f1ee;border-radius:16px;
+    padding:16px;min-height:190px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;overflow:auto
+  }
+  .variant{
+    border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px;background:white
+  }
+  .varianthead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .varianthead strong{font-size:14px}
+  .smallbtn{padding:7px 9px;border-radius:9px;font-size:12px}
+  .ktih-box{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 0
+  }
+  .ktih-mini{padding:10px;border-radius:12px;background:#f7f5ef;border:1px solid var(--line);font-size:12px}
+  .ktih-mini b{display:block;color:var(--green);margin-bottom:3px}
+  .followups{display:grid;gap:8px;margin-top:10px}
+  .followup{border-left:4px solid var(--orange);background:var(--orange2);padding:10px 12px;border-radius:10px;font-size:13px}
+  .footer{
+    margin-top:20px;
+    border-top:1px solid var(--line);
+    color:var(--muted);font-size:11px;text-align:center;padding:18px 8px 10px
+  }
+  .footer b{color:var(--green)}
+  .note{
+    background:#fff6ee;border:1px solid #f2d4c4;border-radius:14px;padding:12px;font-size:13px;margin-top:10px
+  }
+  .subtle{color:var(--muted);font-size:12px}
+  .hidden{display:none!important}
+  @media(max-width:900px){
+    .grid{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+    .ktih-box{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:560px){
+    .wrap{padding:12px}
+    .brandbar{align-items:flex-start}
+    .clienttag{font-size:10px}
+    .hero{padding:20px;border-radius:18px}
+    .card{padding:14px;border-radius:16px}
+    .checkgrid{grid-template-columns:1fr}
+    .ktih-box{grid-template-columns:1fr}
+    button{width:100%}
+    .btnbar{display:grid;grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brandbar">
+    <div class="brandlogo">
+      <img src="data:image/png;base64, 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">
+      
+      
+    </div>
+    <div class="clienttag">Khusus PT Macananjaya Cemerlang</div>
+  </div>
+
+  <section class="hero">
+    <span class="badge">KTIH PROMPT BUILDER</span>
+    <h1>Prompt Builder untuk Claude & AI Workplace</h1>
+    <p>Buat variasi prompt berbasis <b>Konteks – Tugas – Instruksi – Hasil</b> untuk lintas fungsi/divisi. Tidak perlu upload file atau memakai data tertentu; cukup pilih kebutuhan kerja dan isi konteks seperlunya.</p>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1. Bangun Prompt KTIH</h2>
+
+      <div class="step"><b>1</b> Pilih fungsi / divisi</div>
+      <div class="row">
+        <div>
+          <label for="division">Fungsi / Divisi</label>
+          <select id="division"></select>
+        </div>
+        <div id="customDivisionWrap" class="hidden">
+          <label for="customDivision">Nama fungsi/divisi lain</label>
+          <input id="customDivision" placeholder="Contoh: Customer Service" />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="step"><b>2</b> Pilih dan isi konteks</div>
+        <div class="help">Pilih konteks yang memang diperlukan. Tidak ada kebutuhan upload data atau dokumen.</div>
+        <div id="contextTypes" class="checkgrid"></div>
+        <div id="contextFields"></div>
+      </div>
+
+      <div class="section">
+        <div class="step"><b>3</b> Tentukan tugas</div>
+        <div class="row">
+          <div>
+            <label for="task">Tugas utama</label>
+            <select id="task"></select>
+          </div>
+          <div>
+            <label for="taskObject">Topik / hal yang ingin dikerjakan</label>
+            <input id="taskObject" placeholder="Contoh: weekly report, ide perbaikan proses, komunikasi internal..." />
+          </div>
+        </div>
+        <div class="help">10 tugas utama: ringkas, bandingkan, klasifikasikan, analisis, ambil informasi penting, buat draft, susun, ubah, review, identifikasi.</div>
+      </div>
+
+      <div class="section">
+        <div class="step"><b>4</b> Atur instruksi</div>
+        <div class="row">
+          <div>
+            <label for="tone">Gaya / tone</label>
+            <select id="tone"></select>
+          </div>
+          <div>
+            <label for="audience">Audiens output</label>
+            <select id="audience"></select>
+          </div>
+        </div>
+
+        <h3>Pilih instruksi tambahan</h3>
+        <div id="instructionChecks" class="checkgrid"></div>
+
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="focus">Fokus khusus</label>
+            <input id="focus" placeholder="Contoh: risiko, deadline, prioritas, masalah utama..." />
+          </div>
+          <div>
+            <label for="length">Batas panjang</label>
+            <select id="length"></select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="customInstruction">Instruksi tambahan sendiri</label>
+          <textarea id="customInstruction" placeholder="Contoh: gunakan bahasa Indonesia formal; buat hasil praktis; hindari jargon; ajukan pertanyaan klarifikasi bila konteks belum cukup..."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="step"><b>5</b> Tentukan hasil / output</div>
+        <div id="resultChecks" class="checkgrid"></div>
+        <div style="margin-top:10px">
+          <label for="customResult">Output lain (opsional)</label>
+          <input id="customResult" placeholder="Contoh: risk register, decision memo, work breakdown structure..." />
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="step"><b>6</b> Pilih jumlah variasi</div>
+        <label for="variations">Jumlah variasi prompt</label>
+        <select id="variations">
+          <option value="3">3 variasi</option>
+          <option value="4" selected>4 variasi</option>
+        </select>
+      </div>
+
+      <div class="btnbar">
+        <button class="primary" id="generateBtn">Generate Prompt</button>
+        <button class="secondary" id="sampleBtn">Isi Contoh Otomatis</button>
+        <button class="ghost" id="resetBtn">Reset</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Hasil Prompt</h2>
+      <p class="subtle">Aplikasi membuat beberapa variasi prompt dari kebutuhan yang sama: ringkas, terstruktur, lebih ketat, dan kolaboratif.</p>
+
+      <div class="ktih-box">
+        <div class="ktih-mini"><b>K — Konteks</b><span id="miniK">Belum diisi</span></div>
+        <div class="ktih-mini"><b>T — Tugas</b><span id="miniT">Belum diisi</span></div>
+        <div class="ktih-mini"><b>I — Instruksi</b><span id="miniI">Belum diisi</span></div>
+        <div class="ktih-mini"><b>H — Hasil</b><span id="miniH">Belum diisi</span></div>
+      </div>
+
+      <div id="variants"></div>
+
+      <div class="section">
+        <h3>Follow-up Prompt yang Disarankan</h3>
+        <div class="followups" id="followups">
+          <div class="followup">Generate prompt terlebih dahulu.</div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Prinsip penggunaan:</b> output pertama adalah draft. Lakukan review, follow-up, dan verifikasi sebelum digunakan. AI membantu pekerjaan; keputusan dan tanggung jawab tetap berada pada manusia.
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">
+    Mini apps ini dibuat oleh <b>MURAF Indonesia</b> khusus untuk <b>PT Macananjaya Cemerlang</b>.
+  </div>
+</div>
+
+<script>
+const divisions = {
+  "Management / Executive": {
+    role:"Saya bekerja pada fungsi Management/Executive.",
+    situation:"Saya sedang menyiapkan bahan untuk pengambilan keputusan atau briefing manajemen.",
+    audience:"Direksi / Manajemen",
+    purpose:"mendapatkan informasi yang ringkas, terstruktur, dan mudah ditindaklanjuti"
+  },
+  "Admin / Secretary": {
+    role:"Saya bekerja sebagai Admin/Secretary.",
+    situation:"Saya sedang mengelola agenda, komunikasi, tindak lanjut, atau kebutuhan administratif.",
+    audience:"Atasan / Tim Internal",
+    purpose:"merapikan informasi dan mempercepat tindak lanjut administratif"
+  },
+  "Sales": {
+    role:"Saya bekerja pada fungsi Sales.",
+    situation:"Saya sedang mempersiapkan komunikasi, meeting, proposal, atau tindak lanjut customer.",
+    audience:"Customer / Sales Manager",
+    purpose:"membuat komunikasi lebih jelas, relevan, dan berorientasi pada kebutuhan customer"
+  },
+  "Marketing": {
+    role:"Saya bekerja pada fungsi Marketing.",
+    situation:"Saya sedang mengembangkan ide, komunikasi, campaign, atau materi pemasaran.",
+    audience:"Target Audience / Manajemen",
+    purpose:"menghasilkan materi yang relevan, konsisten, dan mudah dipahami"
+  },
+  "Project / Tender": {
+    role:"Saya bekerja pada fungsi Project/Tender.",
+    situation:"Saya sedang menyiapkan pekerjaan proyek, requirement, deliverable, atau timeline.",
+    audience:"Project Manager / Tim Proyek",
+    purpose:"meningkatkan kelengkapan, keterlacakan, dan kesiapan eksekusi"
+  },
+  "Costing / Kalkulasi": {
+    role:"Saya bekerja pada fungsi Costing/Kalkulasi.",
+    situation:"Saya sedang menyiapkan penjelasan costing, asumsi, atau komunikasi terkait struktur biaya.",
+    audience:"Manager / Sales / Finance",
+    purpose:"membantu memahami struktur biaya dan kebutuhan klarifikasi"
+  },
+  "Prepress / Design Preparation": {
+    role:"Saya bekerja pada fungsi Prepress/Design Preparation.",
+    situation:"Saya sedang menyiapkan job brief, revisi artwork, atau briefing sebelum proses berikutnya.",
+    audience:"Tim Prepress / Produksi",
+    purpose:"meminimalkan informasi yang terlewat dan memperjelas requirement kerja"
+  },
+  "Production / Finishing": {
+    role:"Saya bekerja pada fungsi Production/Finishing.",
+    situation:"Saya sedang menyiapkan handover, progress, briefing, atau komunikasi operasional.",
+    audience:"Supervisor / Manager Produksi",
+    purpose:"menyusun informasi operasional agar lebih cepat dipahami dan ditindaklanjuti"
+  },
+  "Quality Control / QA": {
+    role:"Saya bekerja pada fungsi Quality Control/QA.",
+    situation:"Saya sedang menyiapkan review kualitas, pertanyaan investigasi, checklist, atau komunikasi hasil pemeriksaan.",
+    audience:"QC Supervisor / Manajemen",
+    purpose:"membantu review kualitas secara terstruktur tanpa menggantikan keputusan QC"
+  },
+  "Engineering / Maintenance": {
+    role:"Saya bekerja pada fungsi Engineering/Maintenance.",
+    situation:"Saya sedang menyiapkan troubleshooting guide, knowledge note, briefing teknis, atau rencana maintenance.",
+    audience:"Teknisi / Engineering Manager",
+    purpose:"merapikan informasi teknis dan membantu proses investigasi atau knowledge transfer"
+  },
+  "Purchasing / Procurement": {
+    role:"Saya bekerja pada fungsi Purchasing/Procurement.",
+    situation:"Saya sedang mempersiapkan negosiasi, komunikasi supplier, evaluasi awal, atau kebutuhan pembelian.",
+    audience:"Purchasing Manager / Supplier",
+    purpose:"membantu persiapan evaluasi dan komunikasi pembelian secara terstruktur"
+  },
+  "Warehouse": {
+    role:"Saya bekerja pada fungsi Warehouse.",
+    situation:"Saya sedang menyiapkan briefing stock, cycle count, inventory attention, atau komunikasi gudang.",
+    audience:"Warehouse Supervisor / Manajemen",
+    purpose:"merapikan informasi inventory dan menandai area yang perlu perhatian"
+  },
+  "Logistics / Shipping": {
+    role:"Saya bekerja pada fungsi Logistics/Shipping.",
+    situation:"Saya sedang menyiapkan checklist kesiapan pengiriman, jadwal, atau komunikasi delivery.",
+    audience:"Tim Logistik / Customer / Manajemen",
+    purpose:"membantu memastikan informasi pengiriman lengkap dan mudah ditindaklanjuti"
+  },
+  "HR / Personalia": {
+    role:"Saya bekerja pada fungsi HR/Personalia.",
+    situation:"Saya sedang menyiapkan komunikasi karyawan, materi HR, job description, atau kebutuhan administrasi SDM.",
+    audience:"Karyawan / Manager / Kandidat",
+    purpose:"menghasilkan materi HR yang jelas tanpa menggantikan keputusan atau approval manusia"
+  },
+  "Learning & Development": {
+    role:"Saya bekerja pada fungsi Learning & Development.",
+    situation:"Saya sedang menyiapkan materi belajar, quiz, microlearning, atau program pengembangan karyawan.",
+    audience:"Peserta Training / Karyawan",
+    purpose:"membuat pembelajaran lebih ringkas, terstruktur, dan mudah dipahami"
+  },
+  "Finance": {
+    role:"Saya bekerja pada fungsi Finance.",
+    situation:"Saya sedang menyiapkan commentary, report narrative, checklist, atau bahan komunikasi keuangan.",
+    audience:"Finance Manager / Manajemen",
+    purpose:"membantu menjelaskan informasi keuangan secara jelas dan terstruktur"
+  },
+  "Accounting / Tax": {
+    role:"Saya bekerja pada fungsi Accounting/Tax.",
+    situation:"Saya sedang menyiapkan checklist requirement, penjelasan, atau komunikasi terkait akuntansi/pajak.",
+    audience:"Accounting/Tax Manager / Manajemen",
+    purpose:"menyusun kebutuhan informasi tanpa menggantikan verifikasi profesional"
+  },
+  "Legal / Compliance": {
+    role:"Saya bekerja pada fungsi Legal/Compliance.",
+    situation:"Saya sedang menyiapkan ringkasan klausul, penjelasan policy, checklist, atau komunikasi compliance.",
+    audience:"Legal / Manajemen / Pengguna Non-Legal",
+    purpose:"menjelaskan materi secara terstruktur tanpa menggantikan legal opinion"
+  },
+  "IT / Information System": {
+    role:"Saya bekerja pada fungsi IT/Information System.",
+    situation:"Saya sedang menyiapkan dokumentasi, user guide, requirement, atau komunikasi teknis.",
+    audience:"User / IT Team / Manager",
+    purpose:"mengubah informasi teknis menjadi output yang lebih mudah digunakan"
+  },
+  "Environment / Waste Management": {
+    role:"Saya bekerja pada fungsi Environment/Waste Management.",
+    situation:"Saya sedang menyiapkan awareness, reporting narrative, checklist, atau komunikasi lingkungan.",
+    audience:"Manajemen / Karyawan / Compliance",
+    purpose:"menyusun informasi lingkungan secara jelas dan bertanggung jawab"
+  },
+  "Lainnya / Custom": {role:"",situation:"",audience:"",purpose:""}
+};
+
+const contextOptions = [
+  ["role","Peran / jabatan"],
+  ["situation","Situasi / masalah"],
+  ["audience","Audiens / penerima"],
+  ["purpose","Tujuan penggunaan"],
+  ["deadline","Deadline / batas waktu"]
+];
+
+const tasks = [
+  ["Ringkas","Ringkas — ambil inti utama"],
+  ["Bandingkan","Bandingkan — lihat persamaan/perbedaan"],
+  ["Klasifikasikan","Klasifikasikan — kelompokkan ke kategori"],
+  ["Analisis","Analisis — cari pola/insight dari informasi yang ada"],
+  ["Ambil informasi penting","Ambil informasi penting — cari poin spesifik"],
+  ["Buat draft","Buat draft — buat rancangan awal"],
+  ["Susun","Susun — rapikan menjadi struktur"],
+  ["Ubah","Ubah — ganti format/gaya/audiens"],
+  ["Review","Review — periksa kualitas/konsistensi"],
+  ["Identifikasi","Identifikasi — temukan masalah/poin/risiko"]
+];
+
+const tones = [
+  "Profesional dan jelas","Formal","Diplomatis","Sederhana dan non-teknis","Konsultatif",
+  "Ringkas dan langsung","Persuasif tetapi tidak agresif","Teknis dan terstruktur","Netral dan objektif"
+];
+
+const audiences = [
+  "Atasan langsung","Manager","Direksi / Management","Tim internal","Karyawan",
+  "Customer","Supplier","User non-teknis","Tim teknis","HR/Legal/Finance reviewer","Umum / general workplace"
+];
+
+const lengths = [
+  "Tidak dibatasi khusus","Maksimum 5 bullet points","Maksimum 100 kata","Maksimum 150 kata",
+  "Maksimum 1 halaman","Ringkas untuk dibaca ≤2 menit","Detail tetapi tetap terstruktur"
+];
+
+const instructionOptions = [
+  ["clear","Buat jawaban jelas dan terstruktur"],
+  ["factInference","Pisahkan fakta, interpretasi, dan rekomendasi bila relevan"],
+  ["missing","Tandai informasi atau konteks yang masih kurang"],
+  ["questions","Ajukan pertanyaan klarifikasi bila konteks belum cukup"],
+  ["prioritize","Urutkan berdasarkan prioritas/urgensi"],
+  ["plain","Gunakan bahasa yang mudah dipahami"],
+  ["verify","Tandai bagian yang perlu diverifikasi manusia"],
+  ["noFinalDecision","Jangan membuat keputusan final tanpa approval manusia"],
+  ["actionable","Buat hasil yang actionable dan dapat ditindaklanjuti"],
+  ["alternatives","Berikan beberapa alternatif bila relevan"]
+];
+
+const results = [
+  "Email","Tabel","Checklist","Bullet points","Executive summary","Minutes of Meeting",
+  "Report / laporan","Template","SOP draft","FAQ","Action plan","Comparison matrix",
+  "Decision brief","Management brief","Slide outline","Agenda meeting","Timeline / roadmap",
+  "Work Breakdown Structure","Issue log","Change log","Risk register","User guide",
+  "Training outline","Quiz","Interview guide","Communication draft","Dashboard summary",
+  "Requirement matrix","Action tracker","Negotiation preparation","Knowledge note","Audit question list",
+  "Job Description draft","Briefing note","Problem statement","Improvement ideas","Meeting preparation sheet"
+];
+
+function el(id){return document.getElementById(id)}
+function checked(name){return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value)}
+
+function init(){
+  el("division").innerHTML = Object.keys(divisions).map(x=>`<option>${x}</option>`).join("");
+  el("task").innerHTML = tasks.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  el("tone").innerHTML = tones.map(x=>`<option>${x}</option>`).join("");
+  el("audience").innerHTML = audiences.map(x=>`<option>${x}</option>`).join("");
+  el("length").innerHTML = lengths.map(x=>`<option>${x}</option>`).join("");
+
+  el("contextTypes").innerHTML = contextOptions.map(([v,l],i)=>
+    `<label class="chip"><input type="checkbox" name="ctxType" value="${v}" ${i<4?'checked':''}/> <span>${l}</span></label>`
+  ).join("");
+
+  el("instructionChecks").innerHTML = instructionOptions.map(([v,l],i)=>
+    `<label class="chip"><input type="checkbox" name="instr" value="${v}" ${[0,2,6].includes(i)?'checked':''}/> <span>${l}</span></label>`
+  ).join("");
+
+  el("resultChecks").innerHTML = results.map((x,i)=>
+    `<label class="chip"><input type="checkbox" name="result" value="${x}" ${i===1?'checked':''}/> <span>${x}</span></label>`
+  ).join("");
+
+  renderContextFields();
+  applyDivisionDefaults();
+}
+
+function renderContextFields(){
+  const selected = checked("ctxType");
+  const labels = Object.fromEntries(contextOptions);
+  el("contextFields").innerHTML = selected.map(k => {
+    const isLong = ["situation"].includes(k);
+    return `<div style="margin-top:10px">
+      <label for="ctx_${k}">${labels[k]}</label>
+      ${isLong
+        ? `<textarea id="ctx_${k}" data-ctx="${k}" placeholder="Isi ${labels[k].toLowerCase()}..."></textarea>`
+        : `<input id="ctx_${k}" data-ctx="${k}" placeholder="Isi ${labels[k].toLowerCase()}..." />`}
+    </div>`;
+  }).join("");
+  applyDivisionDefaults(false);
+}
+
+function applyDivisionDefaults(force=true){
+  const div = el("division").value;
+  el("customDivisionWrap").classList.toggle("hidden", div!=="Lainnya / Custom");
+  const d = divisions[div] || {};
+  document.querySelectorAll("[data-ctx]").forEach(inp=>{
+    const k=inp.dataset.ctx;
+    if((force || !inp.value) && d[k]) inp.value=d[k];
+  });
+}
+
+function getDivisionName(){
+  return el("division").value==="Lainnya / Custom" ? (el("customDivision").value.trim() || "fungsi/divisi terkait") : el("division").value;
+}
+
+function collectContext(){
+  const arr=[];
+  document.querySelectorAll("[data-ctx]").forEach(inp=>{
+    const v=inp.value.trim();
+    if(v) arr.push(v);
+  });
+  return arr;
+}
+
+function instrText(){
+  const map={
+    clear:"Buat jawaban yang jelas, terstruktur, dan mudah digunakan.",
+    factInference:"Pisahkan dengan jelas mana fakta, interpretasi, dan rekomendasi bila relevan.",
+    missing:"Tandai informasi atau konteks yang masih kurang.",
+    questions:"Jika konteks belum cukup, ajukan pertanyaan klarifikasi sebelum membuat kesimpulan.",
+    prioritize:"Urutkan poin berdasarkan prioritas, urgensi, atau dampak bila relevan.",
+    plain:"Gunakan bahasa yang mudah dipahami dan hindari jargon yang tidak perlu.",
+    verify:"Tandai bagian yang perlu diverifikasi kembali oleh manusia sebelum digunakan.",
+    noFinalDecision:"Jangan membuat keputusan final atau approval atas nama pengguna.",
+    actionable:"Buat hasil yang actionable, jelas, dan mudah ditindaklanjuti.",
+    alternatives:"Berikan beberapa alternatif pendekatan bila relevan."
+  };
+  const items=checked("instr").map(v=>map[v]);
+  if(el("focus").value.trim()) items.push(`Fokus khusus pada: ${el("focus").value.trim()}.`);
+  if(el("tone").value) items.push(`Gunakan gaya bahasa ${el("tone").value.toLowerCase()}.`);
+  if(el("audience").value) items.push(`Sesuaikan penjelasan untuk audiens: ${el("audience").value}.`);
+  if(el("length").value && el("length").value!=="Tidak dibatasi khusus") items.push(el("length").value + ".");
+  if(el("customInstruction").value.trim()) items.push(el("customInstruction").value.trim());
+  return items;
+}
+
+function resultText(){
+  const arr=checked("result");
+  if(el("customResult").value.trim()) arr.push(el("customResult").value.trim());
+  return arr;
+}
+
+function makeCore(){
+  const ctx=collectContext();
+  const task=el("task").value;
+  const obj=el("taskObject").value.trim() || "topik atau pekerjaan yang sedang saya kerjakan";
+  const instr=instrText();
+  const outs=resultText();
+  const div=getDivisionName();
+
+  const k = ctx.length ? ctx.join(" ") : `Saya bekerja pada fungsi ${div}.`;
+  const t = `${task} ${obj}.`;
+  const i = instr.length ? instr.join(" ") : "Kerjakan secara jelas dan terstruktur.";
+  const h = outs.length ? `Tampilkan hasil dalam bentuk: ${outs.join(", ")}.` : "Tampilkan hasil dalam format yang paling mudah digunakan.";
+
+  return {k,t,i,h,task,obj,div};
+}
+
+function makeVariants(core, n){
+  const v1=`KONTEKS:\n${core.k}\n\nTUGAS:\n${core.t}\n\nINSTRUKSI:\n${core.i}\n\nHASIL:\n${core.h}`;
+
+  const v2=`Saya bekerja pada fungsi ${core.div}. ${core.k}\n\nTolong ${core.t.toLowerCase()}\n\nSaat mengerjakan:\n- ${core.i.split(". ").join(".\n- ")}\n\nOutput yang saya butuhkan:\n${core.h}\n\nSebelum final, tandai bagian yang masih membutuhkan verifikasi manusia.`;
+
+  const v3=`Tujuan saya adalah mendapatkan output kerja yang praktis dan dapat direview manusia.\n\n[KONTEKS]\n${core.k}\n\n[TUGAS]\n${core.t}\n\n[ATURAN KERJA]\n${core.i}\n\n[FORMAT OUTPUT]\n${core.h}\n\n[QUALITY CHECK]\n1. Jangan membuat asumsi berlebihan.\n2. Tandai informasi yang masih kurang.\n3. Pisahkan fakta dari interpretasi bila relevan.\n4. Sebutkan bagian yang perlu saya cek kembali.`;
+
+  const v4=`Mari kerjakan secara bertahap.\n\n1) Pahami konteks berikut:\n${core.k}\n\n2) Kerjakan tugas berikut:\n${core.t}\n\n3) Ikuti instruksi:\n${core.i}\n\n4) Hasil akhir:\n${core.h}\n\nSebelum membuat hasil final:\n- Jelaskan singkat bagaimana Anda memahami kebutuhan saya.\n- Sebutkan konteks apa yang masih kurang jika ada.\n\nSetelah itu, buat output dan sertakan bagian "Perlu Diverifikasi Manusia" bila relevan.`;
+
+  return [v1,v2,v3,v4].slice(0,n);
+}
+
+function copyText(text, btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const old=btn.textContent; btn.textContent="Tersalin ✓";
+    setTimeout(()=>btn.textContent=old,1200);
+  });
+}
+
+function generate(){
+  const core=makeCore();
+  const n=parseInt(el("variations").value);
+  el("miniK").textContent=core.k.slice(0,120)+(core.k.length>120?"…":"");
+  el("miniT").textContent=core.t;
+  el("miniI").textContent=core.i.slice(0,120)+(core.i.length>120?"…":"");
+  el("miniH").textContent=core.h;
+
+  const vars=makeVariants(core,n);
+  const titles=["Variasi 1 — Ringkas & Langsung","Variasi 2 — Terstruktur","Variasi 3 — Lebih Ketat / Verifikatif","Variasi 4 — Kolaboratif / Bertahap"];
+  el("variants").innerHTML=vars.map((txt,i)=>`
+    <div class="variant">
+      <div class="varianthead">
+        <strong>${titles[i]}</strong>
+        <button class="secondary smallbtn" data-copy="${i}">Copy</button>
+      </div>
+      <div class="output" id="out_${i}">${escapeHtml(txt)}</div>
+    </div>
+  `).join("");
+
+  vars.forEach((txt,i)=>{
+    const b=document.querySelector(`[data-copy="${i}"]`);
+    b.addEventListener("click",()=>copyText(txt,b));
+  });
+
+  const task=core.task.toLowerCase();
+  el("followups").innerHTML=[
+    `Refine: "Bagian mana dari output tadi yang masih terlalu umum? Perbaiki menjadi lebih spesifik untuk ${core.div}."`,
+    `Constrain: "Ringkas hasil tadi tanpa menghilangkan poin kritis, lalu prioritaskan 3 poin terpenting."`,
+    `Transform: "Ubah hasil tadi menjadi format yang lebih mudah digunakan oleh ${el("audience").value}."`,
+    `Verify: "Pisahkan fakta, interpretasi, dan rekomendasi. Tandai bagian yang perlu saya verifikasi."`,
+    `Gap Check: "Konteks apa yang masih kurang agar hasil ${task} ini lebih akurat dan tidak terlalu banyak asumsi?"`
+  ].map(x=>`<div class="followup">${escapeHtml(x)}</div>`).join("");
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+function fillSample(){
+  el("division").value="HR / Personalia";
+  applyDivisionDefaults(true);
+  setTimeout(()=>{
+    el("task").value="Buat draft";
+    el("taskObject").value="Job Description untuk posisi Production Supervisor";
+    el("focus").value="tujuan posisi, tanggung jawab utama, kompetensi, dan reporting line";
+    el("tone").value="Profesional dan jelas";
+    el("audience").value="Manager";
+    el("length").value="Maksimum 1 halaman";
+    el("customInstruction").value="Buat sebagai draft awal. Jangan menetapkan kebijakan perusahaan yang belum saya berikan dan tandai bagian yang sebaiknya dikonfirmasi oleh HR/User terkait.";
+    document.querySelectorAll('input[name="result"]').forEach(x=>x.checked=["Job Description draft","Checklist"].includes(x.value));
+    generate();
+  },0);
+}
+
+function resetAll(){
+  document.querySelectorAll("input,textarea").forEach(x=>{if(x.type==="checkbox") x.checked=false; else x.value=""});
+  init();
+  el("variants").innerHTML="";
+  el("followups").innerHTML='<div class="followup">Generate prompt terlebih dahulu.</div>';
+  ["miniK","miniT","miniI","miniH"].forEach(id=>el(id).textContent="Belum diisi");
+}
+
+document.addEventListener("change",e=>{
+  if(e.target.name==="ctxType") renderContextFields();
+  if(e.target.id==="division") applyDivisionDefaults(true);
+});
+el("generateBtn").addEventListener("click",generate);
+el("sampleBtn").addEventListener("click",fillSample);
+el("resetBtn").addEventListener("click",resetAll);
+
+init();
+</script>
+</body>
+</html>
